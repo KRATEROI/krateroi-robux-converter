@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Krateroi's Robux Converter — Robux to USD Calculator, Prices, Tax & DevEx</title>
+  <meta name="author" content="Krateroi" />
+  <meta name="description" content="Free Robux calculator: convert Robux to USD, CLP, EUR and 30+ currencies, compare official Roblox buying packages, and work out the 30% marketplace tax and DevEx cash-out." />
+  <link rel="canonical" href="/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Krateroi's Robux Converter — Robux to USD Calculator, Prices, Tax & DevEx" />
+  <meta property="og:description" content="Convert Robux to real currencies, compare Roblox packages, and calculate the 30% tax and DevEx payout." />
+  <meta property="og:url" content="/" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='15' y='15' width='70' height='70' rx='12' fill='%2300b06f' transform='rotate(12 50 50)'/><rect x='38' y='38' width='24' height='24' rx='4' fill='%230d1117' transform='rotate(12 50 50)'/></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="ads.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="brand-cube"></span>
+        <h1>Krateroi's Robux Converter</h1>
+      </div>
+      <div class="header-right">
+        <select id="lang-select" class="lang-select" aria-label="Language">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+        </select>
+        <div id="rate-status" class="rate-status" data-i18n="status.loading">Cargando tasas...</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-layout">
+    <aside class="ad-rail ad-rail-left">
+      <div class="ad-unit" data-ad-side="left" data-ad-format="vertical">
+        <span class="ad-label" data-i18n="ads.label">Publicidad</span>
+      </div>
+    </aside>
+
+    <div class="page-center">
+      <nav class="tabs">
+        <button class="tab active" data-tab="converter" data-i18n="tab.converter">Conversor</button>
+        <button class="tab" data-tab="packages" data-i18n="tab.packages">Precios y paquetes</button>
+        <button class="tab" data-tab="optimizer" data-i18n="tab.optimizer">Costo-beneficio</button>
+        <button class="tab" data-tab="tax" data-i18n="tab.tax">Impuesto 30%</button>
+        <button class="tab" data-tab="devex" data-i18n="tab.devex">DevEx</button>
+      </nav>
+
+      <main>
+    <section id="panel-converter" class="panel active">
+      <h2 data-i18n="conv.title">Conversor Robux ⇄ Moneda</h2>
+      <p class="hint" data-i18n="conv.hint">Escribe en cualquiera de los dos campos y el otro se actualiza al instante.</p>
+
+      <div class="converter-grid">
+        <div class="field">
+          <label for="robux-input">Robux</label>
+          <div class="input-wrap">
+            <span class="prefix robux-icon">R$</span>
+            <input id="robux-input" type="number" min="0" step="any" placeholder="1000" />
+          </div>
+        </div>
+
+        <div class="swap-arrow">⇄</div>
+
+        <div class="field">
+          <label for="money-input" data-i18n="conv.currency">Moneda</label>
+          <div class="input-wrap">
+            <select id="currency-select" aria-label="Moneda"></select>
+            <input id="money-input" type="number" min="0" step="any" placeholder="10.00" />
+          </div>
+        </div>
+      </div>
+
+      <div class="field basis-field">
+        <label for="basis-select" data-i18n="conv.basis">Tasa de referencia</label>
+        <select id="basis-select">
+          <option value="best-web" data-i18n="basis.web">Mejor paquete web (comprar Robux)</option>
+          <option value="best-app" data-i18n="basis.app">Mejor paquete app/consola (comprar Robux)</option>
+          <option value="devex" data-i18n="basis.devex">DevEx — retiro para desarrolladores (US$0.0035 / R$)</option>
+        </select>
+      </div>
+
+      <div id="converter-note" class="note"></div>
+
+      <div class="ad-inline">
+        <div class="ad-unit" data-ad-side="content" data-ad-format="responsive">
+          <span class="ad-label" data-i18n="ads.label">Publicidad</span>
+        </div>
+      </div>
+
+      <h3 data-i18n="conv.allCurrencies">Equivalencia en todas las monedas</h3>
+      <div class="table-scroll">
+        <table id="all-currencies-table">
+          <thead>
+            <tr><th data-i18n="th.currency">Moneda</th><th data-i18n="th.value">Valor</th><th data-i18n="th.rate1000">Tasa (por 1.000 R$)</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="panel-packages" class="panel">
+      <h2 data-i18n="pkg.title">Precios oficiales de Robux</h2>
+      <p class="hint" data-i18n="pkg.hint">
+        Comprar por la web de Roblox entrega mas Robux que por app movil o consola al mismo precio.
+        Los precios base estan en USD; la columna en moneda local usa la tasa de cambio actual.
+      </p>
+      <div class="field basis-field">
+        <label for="pkg-currency-select" data-i18n="pkg.viewIn">Ver precios en</label>
+        <select id="pkg-currency-select"></select>
+      </div>
+      <div id="packages-tables"></div>
+
+      <h3 data-i18n="pkg.subsTitle">Suscripciones con Robux mensuales</h3>
+      <p class="hint" data-i18n="pkg.subsHint"></p>
+      <div id="subs-table" class="table-scroll"></div>
+
+      <div class="note" id="pkg-note"></div>
+    </section>
+
+    <section id="panel-optimizer" class="panel">
+      <h2 data-i18n="opt.title">Calculadora de costo-beneficio</h2>
+      <p class="hint" data-i18n="opt.hint">
+        Indica cuantos Robux necesitas y calculamos la combinacion de paquetes mas barata,
+        comparando web vs app/consola.
+      </p>
+      <div class="field">
+        <label for="target-robux" data-i18n="opt.need">Robux que necesitas</label>
+        <div class="input-wrap">
+          <span class="prefix robux-icon">R$</span>
+          <input id="target-robux" type="number" min="1" step="1" placeholder="6000" />
+        </div>
+      </div>
+      <div class="chips" id="preset-chips">
+        <button data-r="1000">1.000</button>
+        <button data-r="2500">2.500</button>
+        <button data-r="6000">6.000</button>
+        <button data-r="12000">12.000</button>
+        <button data-r="30000">30.000</button>
+        <button data-r="50000">50.000</button>
+      </div>
+      <div id="optimizer-results"></div>
+    </section>
+
+    <section id="panel-tax" class="panel">
+      <h2 data-i18n="tax.title">Calculadora de impuesto del marketplace (30%)</h2>
+      <p class="hint" data-i18n="tax.hint">
+        Roblox retiene el 30% de cada venta dentro de la plataforma (items, pases de juego,
+        productos para desarrolladores). Solo comprar Robux directamente no paga esta comision.
+      </p>
+
+      <div class="tax-grid">
+        <div class="tax-card">
+          <h3 data-i18n="tax.grossTitle">Vendo a un precio → ¿cuanto recibo?</h3>
+          <div class="field">
+            <label for="tax-gross" data-i18n="tax.grossLabel">Precio de venta (Robux)</label>
+            <div class="input-wrap">
+              <span class="prefix robux-icon">R$</span>
+              <input id="tax-gross" type="number" min="1" step="1" placeholder="100" />
+            </div>
+          </div>
+          <div id="tax-gross-result" class="tax-result"></div>
+        </div>
+
+        <div class="tax-card">
+          <h3 data-i18n="tax.netTitle">Quiero recibir X → ¿a cuanto vendo?</h3>
+          <div class="field">
+            <label for="tax-net" data-i18n="tax.netLabel">Robux que quieres recibir</label>
+            <div class="input-wrap">
+              <span class="prefix robux-icon">R$</span>
+              <input id="tax-net" type="number" min="1" step="1" placeholder="70" />
+            </div>
+          </div>
+          <div id="tax-net-result" class="tax-result"></div>
+        </div>
+      </div>
+
+      <h3 data-i18n="tax.tableTitle">Tabla rapida de precios comunes</h3>
+      <div id="tax-table" class="table-scroll"></div>
+    </section>
+
+    <section id="panel-devex" class="panel">
+      <h2 data-i18n="dx.title">DevEx — cambia Robux por dinero real</h2>
+      <p class="hint" data-i18n="dx.hint"></p>
+
+      <div class="tax-grid">
+        <div class="tax-card">
+          <h3 data-i18n="dx.toUsdTitle">Robux → dinero</h3>
+          <div class="field">
+            <label for="dx-robux" data-i18n="dx.robuxLabel">Robux ganados</label>
+            <div class="input-wrap">
+              <span class="prefix robux-icon">R$</span>
+              <input id="dx-robux" type="number" min="1" step="1" placeholder="30000" />
+            </div>
+          </div>
+          <div id="dx-robux-result" class="tax-result"></div>
+        </div>
+
+        <div class="tax-card">
+          <h3 data-i18n="dx.toRobuxTitle">Dinero → Robux necesarios</h3>
+          <div class="field">
+            <label for="dx-usd" data-i18n="dx.usdLabel">Monto deseado (USD)</label>
+            <div class="input-wrap">
+              <span class="prefix">US$</span>
+              <input id="dx-usd" type="number" min="0" step="any" placeholder="105" />
+            </div>
+          </div>
+          <div id="dx-usd-result" class="tax-result"></div>
+        </div>
+      </div>
+
+      <h3 data-i18n="dx.pipeTitle">Pipeline de una venta: del precio al bolsillo</h3>
+      <p class="hint" data-i18n="dx.pipeHint"></p>
+      <div class="field">
+        <label for="dx-sale" data-i18n="dx.saleLabel">Precio de venta del item (Robux)</label>
+        <div class="input-wrap">
+          <span class="prefix robux-icon">R$</span>
+          <input id="dx-sale" type="number" min="1" step="1" placeholder="1000" />
+        </div>
+      </div>
+      <div id="dx-pipeline" class="pipeline"></div>
+
+      <div class="note" id="dx-note" data-i18n="dx.note"></div>
+    </section>
+      </main>
+    </div>
+
+    <aside class="ad-rail ad-rail-right">
+      <div class="ad-unit" data-ad-side="right" data-ad-format="vertical">
+        <span class="ad-label" data-i18n="ads.label">Publicidad</span>
+      </div>
+    </aside>
+  </div>
+
+  <section class="guides-strip container">
+    <h2 data-i18n="guides.title">Guides &amp; articles</h2>
+    <div class="guides-grid">
+      <a class="guide-link" href="robux-to-usd.html">
+        <span class="guide-link-title">How much is Robux worth in USD?</span>
+        <span class="guide-link-desc">The real value of 100, 1,000 and 10,000 Robux.</span>
+      </a>
+      <a class="guide-link" href="web-vs-mobile-robux.html">
+        <span class="guide-link-title">Is buying Robux cheaper on web than mobile?</span>
+        <span class="guide-link-desc">Why the browser gives you more Robux per dollar.</span>
+      </a>
+      <a class="guide-link" href="roblox-devex-explained.html">
+        <span class="guide-link-title">Roblox DevEx explained</span>
+        <span class="guide-link-desc">How developers cash out Robux for real money.</span>
+      </a>
+      <a class="guide-link" href="roblox-30-percent-tax.html">
+        <span class="guide-link-title">The Roblox 30% marketplace tax</span>
+        <span class="guide-link-desc">What you actually keep from every sale.</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="site-footer container">
+    <p id="footer-text"></p>
+    <p class="footer-links">
+      <a href="guides.html" data-i18n="guides.all">All guides</a> ·
+      <a href="privacy.html" data-i18n="footer.privacy">Privacy policy</a>
+    </p>
+  </footer>
+
+  <div class="ad-anchor">
+    <button class="ad-anchor-close" aria-label="Close ad">&times;</button>
+    <div class="ad-unit" data-ad-side="anchor" data-ad-format="anchor">
+      <span class="ad-label" data-i18n="ads.label">Publicidad</span>
+    </div>
+  </div>
+</body>
+</html>
